@@ -294,10 +294,11 @@
     }
 
     function closePopup() {
+        document.getElementById('popupOverlay').classList.remove('remove');
         document.getElementById('popupOverlay').classList.remove('show');
     }
 
-    // નવી વેબ એપ URL અહી પરફેક્ટ સેટ કરી દીધી છે
+    // એક્સેલ ડેટા સેટઅપ ફંક્શન
     function saveDataToExcel(mobileNumber, sipAmount, years, expectedReturn, delayMonths, totalWealth, lossAmount) {
         const webAppUrl = 'https://script.google.com/macros/s/AKfycbyFmHq0jzY-QWEA5QeuMukX5jesNINVclI9Ooh61ohPyF3KnhP-cv5rfz23SgeCmrgQVg/exec';
         
@@ -306,11 +307,10 @@
         fetch(urlWithParams, {
             method: "GET",
             mode: "no-cors"
-        })
-        .then(() => console.log("ડેટા Sheet3 માં સેવ થઈ ગયો છે."))
-        .catch(err => console.log("Error saving data:", err));
+        }).catch(err => console.log("Error saving data:", err));
     }
 
+    // ગણતરીનું લોજિક
     function calculateSIPDelay() {
         const mobileNumber = document.getElementById('mobileNumber').value.trim();
         const sipAmount = parseFloat(document.getElementById('sipAmountInput').value);
@@ -330,17 +330,21 @@
 
         const i = (expectedReturn / 100) / 12;
         
+        // ૧. નોર્મલ સમયગાળા માટેનું ફ્યુચર વેલ્યુ કેલ્ક્યુલેશન (Normal Future Value)
         const totalMonthsNormal = years * 12;
         const fvNormal = sipAmount * ((Math.pow(1 + i, totalMonthsNormal) - 1) / i) * (1 + i);
 
+        // ૨. મોડું કરવાને લીધે ઘટતો સમયગાળો (Delayed Future Value)
         const totalMonthsDelayed = totalMonthsNormal - delayMonths;
         let fvDelayed = 0;
         if(totalMonthsDelayed > 0) {
             fvDelayed = sipAmount * ((Math.pow(1 + i, totalMonthsDelayed) - 1) / i) * (1 + i);
         }
 
+        // ૩. ફાઈનલ નુકસાન (Actual Loss Due to Delay)
         const totalLoss = fvNormal - fvDelayed;
 
+        // કરન્સી ફોર્મેટિંગ
         const formatter = new Intl.NumberFormat('en-IN', {
             style: 'currency',
             currency: 'INR',
@@ -352,6 +356,7 @@
         const formattedDelayed = formatter.format(fvDelayed);
         const formattedSIP = formatter.format(sipAmount);
 
+        // સ્ક્રીન પર રિઝલ્ટ બતાવો
         document.getElementById('lossAmountDisplay').innerText = formattedLoss;
         document.getElementById('resDetails').innerHTML = `
             જો તમે સમયસર SIP શરૂ કરી હોત તો <strong>${years} વર્ષ</strong> માં <strong>${formattedNormal}</strong> નું ફંડ બનત. <br><br>
@@ -360,15 +365,17 @@
 
         document.getElementById('resultBox').style.display = 'block';
 
-        // બેકગ્રાઉન્ડ સબમિશન
+        // બેકગ્રાઉન્ડમાં ગુગલ શીટમાં ડેટા પાર્ક કરવો
         saveDataToExcel(mobileNumber, formattedSIP, years, expectedReturn + "%", delayMonths + " Months", formattedNormal, formattedLoss);
 
+        // ડાયનેમિક વોટ્સએપ મેસેજ સેટઅપ
         const phoneNumber = "917383666008";
         const whatsappMsg = `હેલો અ-ક્ષય વેલ્થ,\n\nમેં હમણાં જ ચેક કર્યું કે દર મહિને ${formattedSIP} ની SIP જો હું ${delayMonths} મહિના મોડી શરૂ કરું, તો મને આશરે ${formattedLoss} નું મોટું નુકસાન થઈ શકે છે!\n\nહું આ નુકસાન બચાવવા આજથી જ મ્યુચ્યુઅલ ફંડમાં મારી SIP શરૂ કરવા માંગુ છું. કૃપા કરીને મને ગાઈડ કરો.`;
         const encodedMsg = encodeURIComponent(whatsappMsg);
         
         document.getElementById('whatsappLink').href = `https://wa.me/${phoneNumber}?text=${encodedMsg}`;
 
+        // ૧૦ સેકન્ડ પછી પોપઅપ ઓપન કરવું
         setTimeout(function() {
             showPopup();
         }, 10000);
