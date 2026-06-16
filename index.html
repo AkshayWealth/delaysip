@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="gu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A-KSHAY WEALTH - SIP Delay Calculator</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            background-color: #f0f4f8;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .calculator-container {
+            background-color: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(11, 43, 82, 0.1);
+            max-width: 500px;
+            width: 100%;
+            padding: 30px;
+            border: 1px solid #e1e8ed;
+        }
+        .brand-header {
+            text-align: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f4f8;
+        }
+        .logo-box {
+            font-size: 34px;
+            font-weight: bold;
+            color: #0b2b52;
+            letter-spacing: 1px;
+            line-height: 1.2;
+        }
+        .logo-devanagari {
+            font-family: 'Arial Black', sans-serif;
+            display: block;
+            margin-bottom: -5px;
+        }
+        .logo-wealth {
+            font-size: 30px;
+            display: block;
+        }
+        .brand-contact {
+            font-size: 13px;
+            color: #5c728a;
+            margin-top: 5px;
+            font-weight: 600;
+        }
+        h2 {
+            color: #0b2b52;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 20px;
+        }
+        .input-group {
+            margin-bottom: 18px;
+        }
+        label {
+            display: block;
+            margin-bottom: 6px;
+            color: #34495e;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 16px;
+            color: #2c3e50;
+            transition: all 0.3s ease;
+        }
+        input:focus, select:focus {
+            border-color: #0b2b52;
+            box-shadow: 0 0 0 3px rgba(11, 43, 82, 0.1);
+            outline: none;
+        }
+        button.btn-calculate {
+            width: 100%;
+            background-color: #0b2b52;
+            color: white;
+            border: none;
+            padding: 14px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-top: 10px;
+        }
+        button.btn-calculate:hover {
+            background-color: #061a33;
+        }
+        .result-box {
+            margin-top: 25px;
+            padding: 20px;
+            background-color: #fff5f5;
+            border-left: 5px solid #e74c3c;
+            border-radius: 6px;
+            display: none;
+        }
+        .result-box h3 {
+            color: #c0392b;
+            margin-bottom: 8px;
+            font-size: 18px;
+        }
+        .loss-value {
+            font-size: 26px;
+            font-weight: bold;
+            color: #e74c3c;
+            margin-bottom: 8px;
+        }
+        .details {
+            font-size: 14px;
+            color: #5c728a;
+            line-height: 1.5;
+        }
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease;
+        }
+        .modal-overlay.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .whatsapp-popup-card {
+            background: linear-gradient(135deg, #ffffff, #f4f9ff);
+            max-width: 420px;
+            width: 90%;
+            padding: 30px;
+            border-radius: 16px;
+            text-align: center;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+            position: relative;
+            transform: scale(0.8);
+            transition: transform 0.4s ease;
+        }
+        .modal-overlay.show .whatsapp-popup-card {
+            transform: scale(1);
+        }
+        .modal-logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #0b2b52;
+            margin-bottom: 15px;
+        }
+        .whatsapp-popup-card h4 {
+            color: #0b2b52;
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+        .whatsapp-popup-card p {
+            font-size: 14px;
+            color: #5c728a;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+        .popup-buttons-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .whatsapp-btn {
+            display: block;
+            background: linear-gradient(135deg, #25d366, #128c7e);
+            color: white;
+            text-decoration: none;
+            padding: 14px 20px;
+            font-weight: bold;
+            border-radius: 30px;
+            font-size: 16px;
+            box-shadow: 0 6px 15px rgba(37, 211, 102, 0.3);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .whatsapp-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(37, 211, 102, 0.4);
+        }
+        .close-popup {
+            position: absolute;
+            top: 15px;
+            right: 18px;
+            font-size: 26px;
+            color: #94a3b8;
+            cursor: pointer;
+            background: none;
+            border: none;
+            font-weight: bold;
+            line-height: 1;
+        }
+        .close-popup:hover {
+            color: #ef4444;
+        }
+    </style>
+</head>
+<body>
+
+<div class="calculator-container">
+    <div class="brand-header">
+        <div class="logo-box">
+            <span class="logo-devanagari">અ–ક્ષય</span>
+            <span class="logo-wealth">Wealth</span>
+        </div>
+        <div class="brand-contact">📞 Call/WhatsApp: +91 7383666008</div>
+    </div>
+
+    <h2>⏱️ SIP Delay Calculator</h2>
+    
+    <div class="input-group">
+        <label for="mobileNumber">તમારો મોબાઇલ નંબર (Mobile Number):</label>
+        <input type="tel" id="mobileNumber" placeholder="દા.ત. 9876543210" maxlength="10" pattern="[0-9]{10}">
+    </div>
+
+    <div class="input-group">
+        <label for="sipAmountInput">તમે દર મહિને કેટલી SIP કરવા માંગો છો? (₹):</label>
+        <input type="number" id="sipAmountInput" placeholder="દા.ત. 5000" min="100">
+    </div>
+
+    <div class="input-group">
+        <label for="yearsInput">તમે કેટલા વર્ષ સુધી રોકાણ કરવા માંગો છો? (Years):</label>
+        <input type="number" id="yearsInput" placeholder="દા.ત. 20" min="1">
+    </div>
+
+    <div class="input-group">
+        <label for="expectedReturnInput">અંદાજિત વળતર (% Yearly):</label>
+        <select id="expectedReturnInput">
+            <option value="8">8% (Conservative Debt)</option>
+            <option value="10">10% (Balanced Fund)</option>
+            <option value="12">12% (Conservative Equity)</option>
+            <option value="15" selected>15% (Aggressive Equity)</option>
+            <option value="18">18% (High Growth Infrastructure)</option>
+        </select>
+    </div>
+
+    <div class="input-group">
+        <label for="delayMonthsInput">SIP શરૂ કરવામાં કેટલું મોડું કરવું છે? (Delay Period):</label>
+        <select id="delayMonthsInput">
+            <option value="1">1 મહિનો (1 Month)</option>
+            <option value="3">3 મહિના (3 Months)</option>
+            <option value="6">6 મહિના (6 Months)</option>
+            <option value="12" selected>1 વર્ષ (12 Months)</option>
+            <option value="24">2 વર્ષ (24 Months)</option>
+        </select>
+    </div>
+
+    <button class="btn-calculate" onclick="calculateSIPDelay()">નુકસાનની ગણતરી કરો</button>
+
+    <div class="result-box" id="resultBox">
+        <h3 id="resLossTitle">⚠️ મોડું કરવાનું મોટું નુકસાન:</h3>
+        <div class="loss-value" id="lossAmountDisplay">₹0</div>
+        <div class="details" id="resDetails"></div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="popupOverlay">
+    <div class="whatsapp-popup-card">
+        <button class="close-popup" onclick="closePopup()">×</button>
+        
+        <div class="modal-logo">📈 અ-ક્ષય Wealth</div>
+        <h4>આ નુકસાન બચાવવા તૈયાર છો?</h4>
+        <p>આજે જ અ-ક્ષય વેલ્થ સાથે મોડું કર્યા વગર યોગ્ય મ્યુચ્યુઅલ ફંડ SIP શરૂ કરો અને સંપત્તિનું સર્જન કરો.</p>
+        
+        <div class="popup-buttons-container">
+            <a href="https://wa.me/917383666008" id="whatsappLink" target="_blank" class="whatsapp-btn">💬 આજથી જ SIP ચાલુ કરો</a>
+        </div>
+    </div>
+</div>
+
+<script>
+    function showPopup() {
+        document.getElementById('popupOverlay').classList.add('show');
+    }
+
+    function closePopup() {
+        document.getElementById('popupOverlay').classList.remove('remove');
+        document.getElementById('popupOverlay').classList.remove('show');
+    }
+
+    // એક્સેલ ડેટા સેટઅપ ફંક્શન
+    function saveDataToExcel(mobileNumber, sipAmount, years, expectedReturn, delayMonths, totalWealth, lossAmount) {
+        const webAppUrl = 'https://script.google.com/macros/s/AKfycbyFmHq0jzY-QWEA5QeuMukX5jesNINVclI9Ooh61ohPyF3KnhP-cv5rfz23SgeCmrgQVg/exec';
+        
+        const urlWithParams = `${webAppUrl}?mobileNumber=${encodeURIComponent(mobileNumber)}&sipAmount=${encodeURIComponent(sipAmount)}&years=${encodeURIComponent(years)}&expectedReturn=${encodeURIComponent(expectedReturn)}&delayMonths=${encodeURIComponent(delayMonths)}&totalWealth=${encodeURIComponent(totalWealth)}&lossAmount=${encodeURIComponent(lossAmount)}`;
+
+        fetch(urlWithParams, {
+            method: "GET",
+            mode: "no-cors"
+        }).catch(err => console.log("Error saving data:", err));
+    }
+
+    // ગણતરીનું લોજિક
+    function calculateSIPDelay() {
+        const mobileNumber = document.getElementById('mobileNumber').value.trim();
+        const sipAmount = parseFloat(document.getElementById('sipAmountInput').value);
+        const years = parseInt(document.getElementById('yearsInput').value);
+        const expectedReturn = parseFloat(document.getElementById('expectedReturnInput').value);
+        const delayMonths = parseInt(document.getElementById('delayMonthsInput').value);
+
+        if (!mobileNumber || mobileNumber.length !== 10 || isNaN(mobileNumber)) {
+            alert("કૃપા કરીને તમારો સાચો ૧૦ અંકનો મોબાઇલ નંબર લખો.");
+            return;
+        }
+
+        if (isNaN(sipAmount) || isNaN(years) || sipAmount <= 0 || years <= 0) {
+            alert("કૃપા કરીને બધી સાચી રકમ અને વર્ષોની વિગત ભરો.");
+            return;
+        }
+
+        const i = (expectedReturn / 100) / 12;
+        
+        // ૧. નોર્મલ સમયગાળા માટેનું ફ્યુચર વેલ્યુ કેલ્ક્યુલેશન (Normal Future Value)
+        const totalMonthsNormal = years * 12;
+        const fvNormal = sipAmount * ((Math.pow(1 + i, totalMonthsNormal) - 1) / i) * (1 + i);
+
+        // ૨. મોડું કરવાને લીધે ઘટતો સમયગાળો (Delayed Future Value)
+        const totalMonthsDelayed = totalMonthsNormal - delayMonths;
+        let fvDelayed = 0;
+        if(totalMonthsDelayed > 0) {
+            fvDelayed = sipAmount * ((Math.pow(1 + i, totalMonthsDelayed) - 1) / i) * (1 + i);
+        }
+
+        // ૩. ફાઈનલ નુકસાન (Actual Loss Due to Delay)
+        const totalLoss = fvNormal - fvDelayed;
+
+        // કરન્સી ફોર્મેટિંગ
+        const formatter = new Intl.NumberFormat('en-IN', {
+            style: 'currency',
+            currency: 'INR',
+            maximumFractionDigits: 0
+        });
+
+        const formattedLoss = formatter.format(totalLoss);
+        const formattedNormal = formatter.format(fvNormal);
+        const formattedDelayed = formatter.format(fvDelayed);
+        const formattedSIP = formatter.format(sipAmount);
+
+        // સ્ક્રીન પર રિઝલ્ટ બતાવો
+        document.getElementById('lossAmountDisplay').innerText = formattedLoss;
+        document.getElementById('resDetails').innerHTML = `
+            જો તમે સમયસર SIP શરૂ કરી હોત તો <strong>${years} વર્ષ</strong> માં <strong>${formattedNormal}</strong> નું ફંડ બનત. <br><br>
+            પરંતુ માત્ર <strong>${delayMonths} મહિનો/મહિના</strong> મોડું કરવાથી તમારું ફંડ ઘટીને <strong>${formattedDelayed}</strong> થઈ જશે.
+        `;
+
+        document.getElementById('resultBox').style.display = 'block';
+
+        // બેકગ્રાઉન્ડમાં ગુગલ શીટમાં ડેટા પાર્ક કરવો
+        saveDataToExcel(mobileNumber, formattedSIP, years, expectedReturn + "%", delayMonths + " Months", formattedNormal, formattedLoss);
+
+        // ડાયનેમિક વોટ્સએપ મેસેજ સેટઅપ
+        const phoneNumber = "917383666008";
+        const whatsappMsg = `હેલો અ-ક્ષય વેલ્થ,\n\nમેં હમણાં જ ચેક કર્યું કે દર મહિને ${formattedSIP} ની SIP જો હું ${delayMonths} મહિના મોડી શરૂ કરું, તો મને આશરે ${formattedLoss} નું મોટું નુકસાન થઈ શકે છે!\n\nહું આ નુકસાન બચાવવા આજથી જ મ્યુચ્યુઅલ ફંડમાં મારી SIP શરૂ કરવા માંગુ છું. કૃપા કરીને મને ગાઈડ કરો.`;
+        const encodedMsg = encodeURIComponent(whatsappMsg);
+        
+        document.getElementById('whatsappLink').href = `https://wa.me/${phoneNumber}?text=${encodedMsg}`;
+
+        // ૧૦ સેકન્ડ પછી પોપઅપ ઓપન કરવું
+        setTimeout(function() {
+            showPopup();
+        }, 10000);
+    }
+</script>
+
+</body>
+</html>
